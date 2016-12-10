@@ -18,7 +18,6 @@ import android.widget.TimePicker;
 
 
 
-
 public class MainActivity extends AppCompatActivity {
 
     // make alarm manager
@@ -37,10 +36,11 @@ public class MainActivity extends AppCompatActivity {
         this.contex = this;
 
         //Initialize alarm manager
-
         alarm_manager = (AlarmManager) getSystemService(ALARM_SERVICE);
+
         //Initialize timepicker
         alarm_timepicker = (TimePicker) findViewById(R.id.timepicker);
+
         //initialize the text update box
         update_text = (TextView) findViewById(R.id.update_text);
 
@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
 
-                set_alarm_text("Alarm set too: " + hour_string + ":" + minute_string);
+                set_alarm_text("Alarm set to: " + hour_string + ":" + minute_string);
 
                 //boolean to tell ringtone you pressed buttn
                 my_intent.putExtra("extra","On");
