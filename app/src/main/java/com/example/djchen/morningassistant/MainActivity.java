@@ -69,10 +69,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     .build();
         }
         //Initialize alarm manager
-
         alarm_manager = (AlarmManager) getSystemService(ALARM_SERVICE);
+
         //Initialize timepicker
         alarm_timepicker = (TimePicker) findViewById(R.id.timepicker);
+
         //initialize the text update box
         update_text = (TextView) findViewById(R.id.update_text);
 
