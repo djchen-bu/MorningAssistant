@@ -33,14 +33,8 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
 
-<<<<<<< HEAD
-
-
-public class MainActivity extends AppCompatActivity {
-=======
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
->>>>>>> master
 
     // make alarm manager
     AlarmManager alarm_manager;
