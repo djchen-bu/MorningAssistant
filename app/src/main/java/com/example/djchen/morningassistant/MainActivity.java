@@ -150,7 +150,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             sendBroadcast(my_intent);
             numSteps = 0;
         }
-
     }
 
     private void set_alarm_text(String output) {

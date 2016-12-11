@@ -51,8 +51,12 @@ public class RingtonePlayingService extends Service {
 
 
         if(!this.music_is_playing && startId == 1){
+
             media_song = MediaPlayer.create(this, R.raw.super_ringtone);
             media_song.start();
+            media_song.setLooping(true);
+
+
 
             this.music_is_playing = true;
             this.startID = 0;
