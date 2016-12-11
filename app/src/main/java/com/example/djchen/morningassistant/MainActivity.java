@@ -1,40 +1,27 @@
 package com.example.djchen.morningassistant;
 
-import android.Manifest;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.icu.util.Calendar;
-import android.location.Location;
-import android.net.Uri;
-import android.nfc.Tag;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.StringDef;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.view.ContextThemeWrapper;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewDebug;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.common.server.converter.StringToIntConverter;
 
 
-public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, LocationListener {
+public class MainActivity extends AppCompatActivity implements SensorEventListener, StepListener {
 
     // make alarm manager
     AlarmManager alarm_manager;
@@ -42,32 +29,29 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     TextView update_text;
     Context contex; //ATTEMPT ONE
     PendingIntent pending_intent;
+    Intent tryIntent;
 
     //FOR LOCATION JUNK
-    private final static String TAG = MainActivity.class.getSimpleName();
-    private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 1000;
-    private Location myLastLoc;
-    private GoogleApiClient myGoogleAPIClient;
-    private boolean RequestLocUpdates = false;
-    private LocationRequest myLocReq;
-    private static int FASTEST_INTERVAL = 5000;
-    private static int DISPLACEMENT = 10;
-    private TextView lblLocation;
+    private StepDetector mStepDetector;
+    private SensorManager sensorManager;
+    private Sensor accel;
+    private int numSteps;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        accel = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        mStepDetector = new StepDetector();
+        mStepDetector.registerListener(this);
+
         setContentView(R.layout.activity_main);
         this.contex = this;
 
-        if(myGoogleAPIClient == null) {
-            myGoogleAPIClient = new GoogleApiClient.Builder(this)
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .addApi(LocationServices.API)
-                    .build();
-        }
+
+
         //Initialize alarm manager
         alarm_manager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
@@ -82,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         //Create Intent class
         final Intent my_intent = new Intent(this.contex, Alarm_Receiver.class);
-
+        tryIntent = my_intent;
 
         //Initialize start Buttons
         final Button alarm_on = (Button) findViewById(R.id.alarm_on);
@@ -124,7 +108,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
 
         });
-/*
+
+        tryIntent = my_intent;
         //Initialize stop Button
         final Button alarm_off = (Button) findViewById(R.id.alarm_off);
 
@@ -150,7 +135,21 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
             }
         });
-*/
+
+        if(numSteps >= 10) {
+            my_intent.putExtra("extra", "Off");
+
+            set_alarm_text("Alarm off");
+
+            alarm_manager.cancel(pending_intent);
+
+            //tells clock off was pressed
+
+            //stop the Ringtone
+
+            sendBroadcast(my_intent);
+            numSteps = 0;
+        }
     }
 
     private void set_alarm_text(String output) {
@@ -163,122 +162,50 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         System.loadLibrary("native-lib");
     }
 
-
     @Override
-    protected void onStart() {
-        myGoogleAPIClient.connect();
-        super.onStart();
-    }
-
-    @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
-        checkPlayServices(); //defined elsewhere! :)
-        if (myGoogleAPIClient.isConnected() && RequestLocUpdates) {
-            startLocationUpdates(); //elsewhere
-        }
+        numSteps = 0;
+        sensorManager.registerListener(this, accel, SensorManager.SENSOR_DELAY_FASTEST);
     }
 
     @Override
-    protected void onStop() {
-        myGoogleAPIClient.disconnect();
-        super.onStop();
-    }
-
-    @Override
-    protected void onPause() {
+    public void onPause() {
         super.onPause();
-        stopLocationUpdates();
-    }
-
-    private void togglePeriodLocationUpdate() {
-        if (!RequestLocUpdates) {
-            RequestLocUpdates = true;
-            startLocationUpdates();
-        } else {
-            RequestLocUpdates = false;
-            stopLocationUpdates();
-        }
-    }
-
-   // protected synchronized void buildGoogleApiClient() {
-       // if(myGoogleAPIClient == null) {
-         //   myGoogleAPIClient = new GoogleApiClient.Builder(this)
-           //         .addConnectionCallbacks(this)
-             //       .addOnConnectionFailedListener(this)
-               //     .addApi(LocationServices.API)
-                 //   .build();
-        //}
-    //}
-
-    protected void createLocationRequest() {
-        myLocReq = new LocationRequest();
-        int UPDATE_INTERVAL = 10000;
-        myLocReq.setInterval(UPDATE_INTERVAL); //THIS MIGHT BE WEIRD
-        myLocReq.setFastestInterval(FASTEST_INTERVAL); //MIGHT ALSO BE WEIRD!
-        myLocReq.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        myLocReq.setSmallestDisplacement(DISPLACEMENT); //CHECK ME!!!
-    }
-
-    private boolean checkPlayServices() {
-        GoogleApiAvailability googleAPI = GoogleApiAvailability.getInstance();
-        int result = googleAPI.isGooglePlayServicesAvailable(this);
-        if(result != ConnectionResult.SUCCESS) {
-            if(googleAPI.isUserResolvableError(result)) {
-                googleAPI.getErrorDialog(this, result,
-                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
-            }
-
-            return false;
-        }
-
-        return true;
-    }
-
-    protected void startLocationUpdates() {
-        //if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            //return;
-        //}
-        LocationServices.FusedLocationApi.requestLocationUpdates(myGoogleAPIClient, myLocReq, this);
-    }
-
-    protected void stopLocationUpdates() {
-        LocationServices.FusedLocationApi.removeLocationUpdates(myGoogleAPIClient, this);
+        sensorManager.unregisterListener(this);
     }
 
     @Override
-    public void onConnected(Bundle connectionHint) {
-        myLastLoc = LocationServices.FusedLocationApi.getLastLocation(myGoogleAPIClient);
-        if(myLastLoc != null) {
-            ///DO SOMETHING HERE TO STORE VALUES FOR TOTAL???
-        }
-        if(RequestLocUpdates) {
-            startLocationUpdates();
+    public void onSensorChanged(SensorEvent event) {
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            mStepDetector.updateAccel(
+                    event.timestamp, event.values[0], event.values[1], event.values[2]);
         }
     }
 
     @Override
-    public void onConnectionSuspended(int i) {
-        myGoogleAPIClient.connect();
+    public void onAccuracyChanged(Sensor sensor, int i) {
     }
 
     @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.i(TAG, "Connection failed: " + connectionResult.getErrorCode()); //Something aint right here
+    public void step(long timeNs) {
+        numSteps++;
+        Log.e("STEP", Integer.toString(numSteps));
+        if(numSteps >= 10) {
+            tryIntent.putExtra("extra", "Off");
 
-    }
+            set_alarm_text("Alarm off");
 
-    @Override
-    public void onLocationChanged(Location location) {
-        myLastLoc = location; //This could make things weird with total distance required
-        Toast.makeText(getApplicationContext(), "Location Changed!", Toast.LENGTH_LONG).show();
+            alarm_manager.cancel(pending_intent);
+
+
+            //tells clock off was pressed
+
+            //stop the Ringtone
+
+            sendBroadcast(tryIntent);
+            numSteps = 0;
+        }
     }
 }
 
