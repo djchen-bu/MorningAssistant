@@ -24,16 +24,6 @@
         android:numbersBackgroundColor="@android:color/darker_gray" />
 
     <Button
-        android:text="@string/set"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="56dp"
-        android:id="@+id/alarm_on"
-        android:layout_marginTop="40dp"
-        android:layout_below="@+id/timepicker"
-        android:layout_centerHorizontal="true" />
-
-    <Button
         android:text="@string/off"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -43,25 +33,35 @@
         android:layout_centerHorizontal="true" />
 
     <TextView
-        android:text="@string/message"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:textSize="20sp"
-        android:id="@+id/textView2"
-        android:layout_below="@+id/alarm_on"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="53dp" />
-
-    <TextView
         android:text="@string/Alarm_set"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="150dp"
         android:textSize="20sp"
         android:id="@+id/update_text"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="8dp"
         android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:text="@string/message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:textSize="20sp"
+        android:id="@+id/textView2"
+        android:layout_marginTop="13dp"
+        android:layout_below="@+id/alarm_on"
+        android:layout_alignParentEnd="true" />
+
+    <Button
+        android:text="@string/set"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="56dp"
+        android:id="@+id/alarm_on"
+        android:layout_marginTop="14dp"
+        android:layout_below="@+id/timepicker"
         android:layout_centerHorizontal="true" />
 
 </RelativeLayout>
