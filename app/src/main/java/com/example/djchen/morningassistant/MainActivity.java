@@ -35,7 +35,10 @@ import com.google.android.gms.location.LocationServices;
 import static com.example.djchen.morningassistant.R.id.alarm_off;
 import static java.lang.Math.abs;
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> refs/remotes/origin/master
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
@@ -53,12 +56,19 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private GoogleApiClient myGoogleAPIClient;
     private boolean RequestLocUpdates = false;
     private LocationRequest myLocReq;
+<<<<<<< HEAD
     private static int FASTEST_INTERVAL = 500;
     private static int DISPLACEMENT = 5;
     private TextView lblLocation;
     private double currentLatitude;
     private double currentLongitude;
     private double locDisplacement;
+=======
+    private static int FASTEST_INTERVAL = 5000;
+    private static int DISPLACEMENT = 10;
+    private TextView lblLocation;
+
+>>>>>>> refs/remotes/origin/master
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,10 +84,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     .build();
         }
         //Initialize alarm manager
-
         alarm_manager = (AlarmManager) getSystemService(ALARM_SERVICE);
+
         //Initialize timepicker
         alarm_timepicker = (TimePicker) findViewById(R.id.timepicker);
+
         //initialize the text update box
         update_text = (TextView) findViewById(R.id.update_text);
 
@@ -226,7 +237,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     protected void createLocationRequest() {
         myLocReq = new LocationRequest();
+<<<<<<< HEAD
         int UPDATE_INTERVAL = 100;
+=======
+        int UPDATE_INTERVAL = 10000;
+>>>>>>> refs/remotes/origin/master
         myLocReq.setInterval(UPDATE_INTERVAL); //THIS MIGHT BE WEIRD
         myLocReq.setFastestInterval(FASTEST_INTERVAL); //MIGHT ALSO BE WEIRD!
         myLocReq.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
@@ -292,8 +307,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     public void onLocationChanged(Location location) {
         myLastLoc = location; //This could make things weird with total distance required
         Toast.makeText(getApplicationContext(), "Location Changed!", Toast.LENGTH_LONG).show();
+<<<<<<< HEAD
         currentLatitude = location.getLatitude();
         currentLongitude = location.getLongitude();
+=======
+>>>>>>> refs/remotes/origin/master
     }
 }
 
