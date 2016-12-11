@@ -22,7 +22,7 @@
         android:layout_below="@+id/update_text"
         android:layout_centerHorizontal="true"
         android:numbersBackgroundColor="@android:color/darker_gray" />
-
+<!--
     <Button
         android:text="@string/off"
         android:layout_width="wrap_content"
@@ -31,7 +31,7 @@
         android:id="@+id/alarm_off"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
-
+-->
     <TextView
         android:text="@string/Alarm_set"
         android:layout_width="wrap_content"

@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
 
         });
-
+/*
         //Initialize stop Button
         final Button alarm_off = (Button) findViewById(R.id.alarm_off);
 
@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
             }
         });
-
+*/
     }
 
     private void set_alarm_text(String output) {
