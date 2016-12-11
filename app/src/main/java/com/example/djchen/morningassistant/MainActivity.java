@@ -110,6 +110,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         });
 
         tryIntent = my_intent;
+/*
         //Initialize stop Button
         final Button alarm_off = (Button) findViewById(R.id.alarm_off);
 
@@ -135,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             }
         });
-
+*/
         if(numSteps >= 10) {
             my_intent.putExtra("extra", "Off");
 
