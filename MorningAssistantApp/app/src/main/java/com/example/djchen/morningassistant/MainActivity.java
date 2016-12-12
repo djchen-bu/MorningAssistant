@@ -77,6 +77,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             public void onClick(View view) {
                 calender.set(Calendar.HOUR_OF_DAY, alarm_timepicker.getHour());
                 calender.set(Calendar.MINUTE, alarm_timepicker.getMinute());
+                if(calender.getTimeInMillis()<System.currentTimeMillis()){
+                    calender.add(Calendar.DATE,1);
+                }
 
                 int hour = alarm_timepicker.getHour();
                 int minute = alarm_timepicker.getMinute();
